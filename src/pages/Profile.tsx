@@ -6,7 +6,7 @@ import AppLayout from "@/components/AppLayout";
 import PostCard from "@/components/PostCard";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
-import { Settings } from "lucide-react";
+import { Settings, MapPin, BookOpen } from "lucide-react";
 
 export default function Profile() {
   const { id } = useParams<{ id: string }>();
@@ -57,7 +57,7 @@ export default function Profile() {
   if (loading) {
     return (
       <AppLayout>
-        <div className="flex justify-center py-12">
+        <div className="flex justify-center py-16">
           <div className="h-8 w-8 animate-spin rounded-full border-4 border-primary border-t-transparent" />
         </div>
       </AppLayout>
@@ -67,63 +67,75 @@ export default function Profile() {
   if (!profile) {
     return (
       <AppLayout>
-        <p className="text-center py-12 text-muted-foreground">Perfil não encontrado.</p>
+        <p className="text-center py-16 text-muted-foreground">Perfil nao encontrado.</p>
       </AppLayout>
     );
   }
 
-  const name = profile.name || "Usuário";
+  const name = profile.name || "Usuario";
 
   return (
     <AppLayout>
       {/* Cover */}
-      <div className="relative -mx-4 -mt-4 h-36 bg-gradient-to-br from-primary to-accent rounded-b-2xl overflow-hidden">
+      <div className="relative -mx-4 -mt-4 h-32 sm:h-40 bg-gradient-to-br from-primary/80 to-secondary/60 overflow-hidden">
         {profile.cover_url && (
           <img src={profile.cover_url} alt="" className="w-full h-full object-cover" />
         )}
       </div>
 
       {/* Avatar + Info */}
-      <div className="relative -mt-12 flex flex-col items-center">
-        <Avatar className="h-24 w-24 border-4 border-card">
+      <div className="relative -mt-14 flex flex-col items-center animate-fade-in">
+        <Avatar className="h-24 w-24 border-4 border-card shadow-lg">
           <AvatarImage src={profile.avatar_url || undefined} />
-          <AvatarFallback className="bg-primary text-primary-foreground text-xl">
+          <AvatarFallback className="bg-primary text-primary-foreground text-xl font-bold">
             {name.slice(0, 2).toUpperCase()}
           </AvatarFallback>
         </Avatar>
 
-        <h1 className="mt-2 text-xl font-bold">{name}</h1>
+        <h1 className="mt-3 text-xl font-bold text-balance text-center">{name}</h1>
+
         {profile.class_course && (
-          <p className="text-sm text-muted-foreground">{profile.class_course}</p>
+          <div className="flex items-center gap-1 mt-1 text-sm text-muted-foreground">
+            <BookOpen size={13} />
+            <span>{profile.class_course}</span>
+          </div>
         )}
-        {profile.bio && <p className="mt-1 text-sm text-center max-w-xs">{profile.bio}</p>}
+
+        {profile.bio && (
+          <p className="mt-2 text-sm text-center max-w-xs leading-relaxed text-muted-foreground">{profile.bio}</p>
+        )}
 
         {/* Stats */}
-        <div className="mt-4 flex gap-8 text-center">
+        <div className="mt-5 flex gap-8 text-center">
           <div>
-            <p className="text-lg font-bold">{posts.length}</p>
-            <p className="text-xs text-muted-foreground">Posts</p>
+            <p className="text-lg font-bold tabular-nums">{posts.length}</p>
+            <p className="text-[11px] text-muted-foreground font-medium">Posts</p>
           </div>
           <div>
-            <p className="text-lg font-bold">{followersCount}</p>
-            <p className="text-xs text-muted-foreground">Seguidores</p>
+            <p className="text-lg font-bold tabular-nums">{followersCount}</p>
+            <p className="text-[11px] text-muted-foreground font-medium">Seguidores</p>
           </div>
           <div>
-            <p className="text-lg font-bold">{followingCount}</p>
-            <p className="text-xs text-muted-foreground">Seguindo</p>
+            <p className="text-lg font-bold tabular-nums">{followingCount}</p>
+            <p className="text-[11px] text-muted-foreground font-medium">Seguindo</p>
           </div>
         </div>
 
         {/* Actions */}
         <div className="mt-4">
           {isOwner ? (
-            <Button variant="outline" size="sm" asChild>
+            <Button variant="outline" size="sm" className="rounded-full gap-1.5 px-4" asChild>
               <Link to="/edit-profile">
-                <Settings size={16} className="mr-1" /> Editar perfil
+                <Settings size={14} /> Editar perfil
               </Link>
             </Button>
           ) : (
-            <Button size="sm" variant={isFollowing ? "outline" : "default"} onClick={toggleFollow}>
+            <Button
+              size="sm"
+              variant={isFollowing ? "outline" : "default"}
+              onClick={toggleFollow}
+              className="rounded-full px-6 font-semibold"
+            >
               {isFollowing ? "Seguindo" : "Seguir"}
             </Button>
           )}
@@ -131,11 +143,18 @@ export default function Profile() {
       </div>
 
       {/* Posts */}
-      <div className="mt-6 space-y-4">
+      <div className="mt-8 space-y-4">
+        <h2 className="text-sm font-semibold text-muted-foreground px-1">Posts</h2>
         {posts.length === 0 ? (
-          <p className="text-center text-sm text-muted-foreground py-8">Nenhum post ainda.</p>
+          <div className="py-12 text-center">
+            <p className="text-sm text-muted-foreground">Nenhum post ainda.</p>
+          </div>
         ) : (
-          posts.map((post) => <PostCard key={post.id} post={post} onUpdate={fetchData} />)
+          posts.map((post, i) => (
+            <div key={post.id} className="animate-slide-up" style={{ animationDelay: `${i * 50}ms` }}>
+              <PostCard post={post} onUpdate={fetchData} />
+            </div>
+          ))
         )}
       </div>
     </AppLayout>
