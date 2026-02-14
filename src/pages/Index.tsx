@@ -3,6 +3,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/lib/auth";
 import AppLayout from "@/components/AppLayout";
 import PostCard from "@/components/PostCard";
+import StoriesBar from "@/components/StoriesBar";
 import logo from "@/assets/logo.png";
 
 export default function Index() {
@@ -25,13 +26,19 @@ export default function Index() {
   }, []);
 
   return (
-    <AppLayout>
+    <AppLayout noPadding>
       {/* Mobile header */}
-      <div className="flex items-center justify-center pb-4 md:hidden">
-        <img src={logo} alt="FaeNet" className="h-8 w-auto" />
+      <div className="flex items-center justify-between px-4 py-3 border-b border-border bg-card md:hidden">
+        <img src={logo} alt="FaeNet" className="h-7 w-auto" />
       </div>
 
-      <div className="space-y-4">
+      {/* Stories */}
+      <div className="border-b border-border bg-card px-3">
+        <StoriesBar />
+      </div>
+
+      {/* Feed */}
+      <div>
         {loading ? (
           <div className="flex justify-center py-12">
             <div className="h-8 w-8 animate-spin rounded-full border-4 border-primary border-t-transparent" />
