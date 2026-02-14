@@ -3,10 +3,10 @@ import { useParams, Link } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/lib/auth";
 import AppLayout from "@/components/AppLayout";
-import PostCard from "@/components/PostCard";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
-import { Settings } from "lucide-react";
+import { Settings, Grid3X3, Bookmark } from "lucide-react";
+import { cn } from "@/lib/utils";
 
 export default function Profile() {
   const { id } = useParams<{ id: string }>();
@@ -17,6 +17,7 @@ export default function Profile() {
   const [followingCount, setFollowingCount] = useState(0);
   const [isFollowing, setIsFollowing] = useState(false);
   const [loading, setLoading] = useState(true);
+  const [tab, setTab] = useState<"posts" | "saved">("posts");
 
   const isOwner = user?.id === id;
 
@@ -25,7 +26,7 @@ export default function Profile() {
 
     const [profileRes, postsRes, followersRes, followingRes, isFollowingRes] = await Promise.all([
       supabase.from("profiles").select("*").eq("user_id", id).maybeSingle(),
-      supabase.from("posts").select("*, profiles:user_id(name, avatar_url), likes(user_id), comments(id)").eq("user_id", id).order("created_at", { ascending: false }),
+      supabase.from("posts").select("*, likes(user_id), comments(id)").eq("user_id", id).order("created_at", { ascending: false }),
       supabase.from("follows").select("id", { count: "exact" }).eq("following_id", id),
       supabase.from("follows").select("id", { count: "exact" }).eq("follower_id", id),
       user ? supabase.from("follows").select("id").eq("follower_id", user.id).eq("following_id", id).maybeSingle() : Promise.resolve({ data: null }),
@@ -75,69 +76,128 @@ export default function Profile() {
   const name = profile.name || "Usuário";
 
   return (
-    <AppLayout>
-      {/* Cover */}
-      <div className="relative -mx-4 -mt-4 h-36 bg-gradient-to-br from-primary to-accent rounded-b-2xl overflow-hidden">
-        {profile.cover_url && (
-          <img src={profile.cover_url} alt="" className="w-full h-full object-cover" />
+    <AppLayout noPadding>
+      {/* Header */}
+      <div className="flex items-center justify-between px-4 py-3 border-b border-border">
+        <h1 className="text-lg font-bold">{name}</h1>
+        {isOwner && (
+          <Link to="/edit-profile" className="text-foreground">
+            <Settings size={22} />
+          </Link>
         )}
       </div>
 
-      {/* Avatar + Info */}
-      <div className="relative -mt-12 flex flex-col items-center">
-        <Avatar className="h-24 w-24 border-4 border-card">
-          <AvatarImage src={profile.avatar_url || undefined} />
-          <AvatarFallback className="bg-primary text-primary-foreground text-xl">
-            {name.slice(0, 2).toUpperCase()}
-          </AvatarFallback>
-        </Avatar>
+      {/* Profile info */}
+      <div className="px-4 py-4">
+        <div className="flex items-center gap-6">
+          {/* Avatar */}
+          <Avatar className="h-20 w-20 ring-2 ring-primary/20">
+            <AvatarImage src={profile.avatar_url || undefined} />
+            <AvatarFallback className="bg-primary text-primary-foreground text-xl">
+              {name.slice(0, 2).toUpperCase()}
+            </AvatarFallback>
+          </Avatar>
 
-        <h1 className="mt-2 text-xl font-bold">{name}</h1>
-        {profile.class_course && (
-          <p className="text-sm text-muted-foreground">{profile.class_course}</p>
-        )}
-        {profile.bio && <p className="mt-1 text-sm text-center max-w-xs">{profile.bio}</p>}
-
-        {/* Stats */}
-        <div className="mt-4 flex gap-8 text-center">
-          <div>
-            <p className="text-lg font-bold">{posts.length}</p>
-            <p className="text-xs text-muted-foreground">Posts</p>
-          </div>
-          <div>
-            <p className="text-lg font-bold">{followersCount}</p>
-            <p className="text-xs text-muted-foreground">Seguidores</p>
-          </div>
-          <div>
-            <p className="text-lg font-bold">{followingCount}</p>
-            <p className="text-xs text-muted-foreground">Seguindo</p>
+          {/* Stats */}
+          <div className="flex-1 flex justify-around text-center">
+            <div>
+              <p className="text-lg font-bold">{posts.length}</p>
+              <p className="text-xs text-muted-foreground">Posts</p>
+            </div>
+            <div>
+              <p className="text-lg font-bold">{followersCount}</p>
+              <p className="text-xs text-muted-foreground">Seguidores</p>
+            </div>
+            <div>
+              <p className="text-lg font-bold">{followingCount}</p>
+              <p className="text-xs text-muted-foreground">Seguindo</p>
+            </div>
           </div>
         </div>
 
-        {/* Actions */}
+        {/* Bio */}
+        <div className="mt-3">
+          <p className="text-sm font-semibold">{name}</p>
+          {profile.class_course && (
+            <p className="text-sm text-muted-foreground">{profile.class_course}</p>
+          )}
+          {profile.bio && <p className="text-sm mt-1">{profile.bio}</p>}
+        </div>
+
+        {/* Action button */}
         <div className="mt-4">
           {isOwner ? (
-            <Button variant="outline" size="sm" asChild>
-              <Link to="/edit-profile">
-                <Settings size={16} className="mr-1" /> Editar perfil
-              </Link>
+            <Button variant="outline" size="sm" className="w-full" asChild>
+              <Link to="/edit-profile">Editar perfil</Link>
             </Button>
           ) : (
-            <Button size="sm" variant={isFollowing ? "outline" : "default"} onClick={toggleFollow}>
+            <Button
+              size="sm"
+              className="w-full"
+              variant={isFollowing ? "outline" : "default"}
+              onClick={toggleFollow}
+            >
               {isFollowing ? "Seguindo" : "Seguir"}
             </Button>
           )}
         </div>
       </div>
 
-      {/* Posts */}
-      <div className="mt-6 space-y-4">
-        {posts.length === 0 ? (
-          <p className="text-center text-sm text-muted-foreground py-8">Nenhum post ainda.</p>
-        ) : (
-          posts.map((post) => <PostCard key={post.id} post={post} onUpdate={fetchData} />)
-        )}
+      {/* Tabs */}
+      <div className="flex border-t border-border">
+        <button
+          onClick={() => setTab("posts")}
+          className={cn(
+            "flex-1 flex justify-center py-3 border-b-2 transition-colors",
+            tab === "posts" ? "border-foreground text-foreground" : "border-transparent text-muted-foreground"
+          )}
+        >
+          <Grid3X3 size={22} />
+        </button>
+        <button
+          onClick={() => setTab("saved")}
+          className={cn(
+            "flex-1 flex justify-center py-3 border-b-2 transition-colors",
+            tab === "saved" ? "border-foreground text-foreground" : "border-transparent text-muted-foreground"
+          )}
+        >
+          <Bookmark size={22} />
+        </button>
       </div>
+
+      {/* Grid */}
+      {tab === "posts" && (
+        <div className="grid grid-cols-3 gap-0.5">
+          {posts.length === 0 ? (
+            <div className="col-span-3 py-16 text-center">
+              <p className="text-sm text-muted-foreground">Nenhum post ainda.</p>
+            </div>
+          ) : (
+            posts.map((post) => (
+              <Link key={post.id} to={`/post/${post.id}`} className="aspect-square bg-muted relative group">
+                {post.image_url ? (
+                  <img src={post.image_url} alt="" className="w-full h-full object-cover" />
+                ) : (
+                  <div className="w-full h-full flex items-center justify-center bg-muted p-2">
+                    <p className="text-xs text-muted-foreground line-clamp-3 text-center">{post.content}</p>
+                  </div>
+                )}
+                {/* Overlay on hover */}
+                <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-4 text-white text-sm font-semibold">
+                  <span className="flex items-center gap-1">❤️ {post.likes?.length || 0}</span>
+                  <span className="flex items-center gap-1">💬 {post.comments?.length || 0}</span>
+                </div>
+              </Link>
+            ))
+          )}
+        </div>
+      )}
+
+      {tab === "saved" && (
+        <div className="py-16 text-center">
+          <p className="text-sm text-muted-foreground">Nenhum post salvo.</p>
+        </div>
+      )}
     </AppLayout>
   );
 }

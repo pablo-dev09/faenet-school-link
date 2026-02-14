@@ -5,7 +5,7 @@ import { useAuth } from "@/lib/auth";
 import AppLayout from "@/components/AppLayout";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
-import { ImagePlus, X } from "lucide-react";
+import { ImagePlus, X, ArrowLeft } from "lucide-react";
 import { toast } from "sonner";
 
 export default function NewPost() {
@@ -64,44 +64,52 @@ export default function NewPost() {
   };
 
   return (
-    <AppLayout>
-      <h1 className="text-lg font-bold mb-4">Novo Post</h1>
+    <AppLayout noPadding>
+      {/* Header */}
+      <div className="flex items-center justify-between px-4 py-3 border-b border-border">
+        <button onClick={() => navigate(-1)} className="text-foreground">
+          <ArrowLeft size={22} />
+        </button>
+        <h1 className="font-semibold">Novo Post</h1>
+        <Button
+          size="sm"
+          onClick={handleSubmit}
+          disabled={loading || (!content.trim() && !imageFile)}
+          className="text-sm"
+        >
+          {loading ? "..." : "Compartilhar"}
+        </Button>
+      </div>
 
-      <div className="space-y-4">
-        <Textarea
-          placeholder="O que está acontecendo?"
-          value={content}
-          onChange={(e) => setContent(e.target.value)}
-          rows={4}
-          className="resize-none"
-        />
-
+      <div className="p-4 space-y-4">
         {preview && (
           <div className="relative">
-            <img src={preview} alt="" className="w-full rounded-lg max-h-72 object-cover" />
+            <img src={preview} alt="" className="w-full rounded-lg aspect-square object-cover" />
             <button
               onClick={removeImage}
-              className="absolute top-2 right-2 rounded-full bg-black/60 p-1 text-white"
+              className="absolute top-2 right-2 rounded-full bg-black/60 p-1.5 text-white"
             >
               <X size={16} />
             </button>
           </div>
         )}
 
-        <div className="flex items-center justify-between">
-          <button
-            onClick={() => fileRef.current?.click()}
-            className="flex items-center gap-2 text-sm text-muted-foreground hover:text-primary transition-colors"
-          >
-            <ImagePlus size={20} />
-            Adicionar foto
-          </button>
-          <input ref={fileRef} type="file" accept="image/*" className="hidden" onChange={handleImage} />
+        <Textarea
+          placeholder="Escreva uma legenda..."
+          value={content}
+          onChange={(e) => setContent(e.target.value)}
+          rows={4}
+          className="resize-none border-0 bg-transparent focus-visible:ring-0 text-sm"
+        />
 
-          <Button onClick={handleSubmit} disabled={loading || (!content.trim() && !imageFile)}>
-            {loading ? "Publicando..." : "Publicar"}
-          </Button>
-        </div>
+        <button
+          onClick={() => fileRef.current?.click()}
+          className="flex items-center gap-2 text-sm text-primary font-medium"
+        >
+          <ImagePlus size={20} />
+          {preview ? "Trocar foto" : "Adicionar foto"}
+        </button>
+        <input ref={fileRef} type="file" accept="image/*" className="hidden" onChange={handleImage} />
       </div>
     </AppLayout>
   );
