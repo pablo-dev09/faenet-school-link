@@ -1,6 +1,7 @@
 import { useState } from "react";
-import { Heart, MessageCircle, Trash2, Send, Bookmark } from "lucide-react";
+import { Heart, MessageCircle, Trash2, Send, Bookmark, CheckCircle } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Badge } from "@/components/ui/badge";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/lib/auth";
 import { formatDistanceToNow } from "date-fns";
@@ -15,7 +16,7 @@ interface PostCardProps {
     image_url: string | null;
     created_at: string;
     user_id: string;
-    profiles: { name: string; avatar_url: string | null } | null;
+    profiles: { name: string; avatar_url: string | null; account_type?: string } | null;
     likes: { user_id: string }[];
     comments: { id: string }[];
   };
@@ -72,10 +73,15 @@ export default function PostCard({ post, onUpdate }: PostCardProps) {
             </AvatarFallback>
           </Avatar>
         </Link>
-        <div className="flex-1 min-w-0">
+        <div className="flex-1 min-w-0 flex items-center gap-1.5">
           <Link to={`/profile/${post.user_id}`} className="text-sm font-semibold hover:opacity-70 transition-opacity">
             {authorName}
           </Link>
+          {post.profiles?.account_type === "professor" && (
+            <Badge variant="secondary" className="text-[10px] px-1.5 py-0 gap-0.5 shrink-0">
+              <CheckCircle size={10} /> Professor
+            </Badge>
+          )}
         </div>
         {isOwner && (
           <button onClick={deletePost} className="text-muted-foreground hover:text-destructive transition-colors p-1">

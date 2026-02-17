@@ -1,12 +1,23 @@
-import { Home, Search, PlusSquare, Bell, User, LogOut } from "lucide-react";
+import { Home, Search, PlusSquare, Bell, User, LogOut, GraduationCap } from "lucide-react";
 import { NavLink } from "@/components/NavLink";
 import { useAuth } from "@/lib/auth";
+import { useEffect, useState } from "react";
+import { supabase } from "@/integrations/supabase/client";
+import { courseToSlug } from "@/lib/constants";
 import logo from "@/assets/logo.png";
 
 export default function Sidebar() {
   const { user, signOut } = useAuth();
+  const [course, setCourse] = useState<string | null>(null);
   const base = "flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium text-muted-foreground transition-colors hover:bg-muted";
   const active = "bg-muted text-primary";
+
+  useEffect(() => {
+    if (!user) return;
+    supabase.from("profiles").select("class_course").eq("user_id", user.id).maybeSingle().then(({ data }) => {
+      setCourse(data?.class_course || null);
+    });
+  }, [user]);
 
   return (
     <aside className="hidden md:flex fixed left-0 top-0 h-full w-60 flex-col border-r bg-card p-4">
@@ -21,6 +32,11 @@ export default function Sidebar() {
         <NavLink to="/explore" className={base} activeClassName={active}>
           <Search size={20} /> Explorar
         </NavLink>
+        {course && (
+          <NavLink to={`/course/${courseToSlug(course)}`} className={base} activeClassName={active}>
+            <GraduationCap size={20} /> Meu Curso
+          </NavLink>
+        )}
         <NavLink to="/new-post" className={base} activeClassName={active}>
           <PlusSquare size={20} /> Novo Post
         </NavLink>
