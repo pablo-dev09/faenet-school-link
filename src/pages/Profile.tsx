@@ -5,7 +5,8 @@ import { useAuth } from "@/lib/auth";
 import AppLayout from "@/components/AppLayout";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
-import { Settings, Grid3X3, Bookmark } from "lucide-react";
+import { Badge } from "@/components/ui/badge";
+import { Settings, Grid3X3, Bookmark, CheckCircle } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 export default function Profile() {
@@ -117,9 +118,16 @@ export default function Profile() {
 
         {/* Bio */}
         <div className="mt-3">
-          <p className="text-sm font-semibold">{name}</p>
+          <div className="flex items-center gap-2">
+            <p className="text-sm font-semibold">{name}</p>
+            {profile.account_type === "professor" && (
+              <Badge variant="secondary" className="text-[10px] px-1.5 py-0 gap-0.5">
+                <CheckCircle size={10} /> Professor Verificado
+              </Badge>
+            )}
+          </div>
           {profile.class_course && (
-            <p className="text-sm text-muted-foreground">{profile.class_course}</p>
+            <p className="text-sm text-muted-foreground">📚 {profile.class_course}</p>
           )}
           {profile.bio && <p className="text-sm mt-1">{profile.bio}</p>}
         </div>

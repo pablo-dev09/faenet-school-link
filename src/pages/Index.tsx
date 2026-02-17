@@ -14,7 +14,7 @@ export default function Index() {
   const fetchPosts = async () => {
     const { data } = await supabase
       .from("posts")
-      .select("*, profiles:user_id(name, avatar_url), likes(user_id), comments(id)")
+      .select("*, profiles:user_id(name, avatar_url, account_type), likes(user_id), comments(id)")
       .order("created_at", { ascending: false })
       .limit(50);
     setPosts(data || []);
