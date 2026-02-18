@@ -12,7 +12,7 @@ export default function AppLayout({ children, noPadding }: AppLayoutProps) {
     <div className="min-h-screen bg-background">
       <Sidebar />
       <main className="pb-14 md:pl-60 md:pb-0">
-        <div className={noPadding ? "mx-auto max-w-lg" : "mx-auto max-w-lg px-4 py-4"}>
+        <div className={`page-enter ${noPadding ? "mx-auto max-w-lg" : "mx-auto max-w-lg px-4 py-4"}`}>
           {children}
         </div>
       </main>

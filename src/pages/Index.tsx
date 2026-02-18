@@ -1,13 +1,16 @@
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/lib/auth";
+import { useTheme } from "@/lib/theme";
 import AppLayout from "@/components/AppLayout";
 import PostCard from "@/components/PostCard";
 import StoriesBar from "@/components/StoriesBar";
+import { Sun, Moon } from "lucide-react";
 import logo from "@/assets/logo.png";
 
 export default function Index() {
   const { user } = useAuth();
+  const { theme, toggleTheme } = useTheme();
   const [posts, setPosts] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
 
@@ -30,6 +33,13 @@ export default function Index() {
       {/* Mobile header */}
       <div className="flex items-center justify-between px-4 py-3 border-b border-border bg-card md:hidden">
         <img src={logo} alt="FaeNet" className="h-7 w-auto" />
+        <button
+          onClick={toggleTheme}
+          className="p-2 rounded-lg text-muted-foreground hover:bg-muted transition-colors"
+          aria-label="Alternar tema"
+        >
+          {theme === "dark" ? <Sun size={20} /> : <Moon size={20} />}
+        </button>
       </div>
 
       {/* Stories */}
