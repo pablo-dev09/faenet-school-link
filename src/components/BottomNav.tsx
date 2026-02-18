@@ -1,12 +1,14 @@
-import { Home, Search, PlusSquare, GraduationCap, User } from "lucide-react";
+import { Home, Search, PlusSquare, GraduationCap, User, Sun, Moon } from "lucide-react";
 import { NavLink } from "@/components/NavLink";
 import { useAuth } from "@/lib/auth";
+import { useTheme } from "@/lib/theme";
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { courseToSlug } from "@/lib/constants";
 
 export default function BottomNav() {
   const { user } = useAuth();
+  const { theme, toggleTheme } = useTheme();
   const [course, setCourse] = useState<string | null>(null);
   const base = "flex flex-col items-center gap-0.5 text-xs text-muted-foreground transition-colors";
   const active = "text-primary";
@@ -39,6 +41,10 @@ export default function BottomNav() {
             <span>Curso</span>
           </NavLink>
         )}
+        <button onClick={toggleTheme} className={base}>
+          {theme === "dark" ? <Sun size={22} /> : <Moon size={22} />}
+          <span>{theme === "dark" ? "Claro" : "Escuro"}</span>
+        </button>
         <NavLink to={`/profile/${user?.id}`} className={base} activeClassName={active}>
           <User size={22} />
           <span>Perfil</span>

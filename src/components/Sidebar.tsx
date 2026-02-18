@@ -1,6 +1,7 @@
-import { Home, Search, PlusSquare, Bell, User, LogOut, GraduationCap } from "lucide-react";
+import { Home, Search, PlusSquare, Bell, User, LogOut, GraduationCap, Sun, Moon } from "lucide-react";
 import { NavLink } from "@/components/NavLink";
 import { useAuth } from "@/lib/auth";
+import { useTheme } from "@/lib/theme";
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { courseToSlug } from "@/lib/constants";
@@ -8,6 +9,7 @@ import logo from "@/assets/logo.png";
 
 export default function Sidebar() {
   const { user, signOut } = useAuth();
+  const { theme, toggleTheme } = useTheme();
   const [course, setCourse] = useState<string | null>(null);
   const base = "flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium text-muted-foreground transition-colors hover:bg-muted";
   const active = "bg-muted text-primary";
@@ -48,6 +50,13 @@ export default function Sidebar() {
         </NavLink>
       </nav>
 
+      <button
+        onClick={toggleTheme}
+        className="flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium text-muted-foreground transition-colors hover:bg-muted mb-1"
+      >
+        {theme === "dark" ? <Sun size={20} /> : <Moon size={20} />}
+        {theme === "dark" ? "Modo Claro" : "Modo Escuro"}
+      </button>
       <button
         onClick={signOut}
         className="flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium text-muted-foreground transition-colors hover:bg-destructive/10 hover:text-destructive"

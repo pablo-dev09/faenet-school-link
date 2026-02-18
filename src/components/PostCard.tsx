@@ -62,7 +62,7 @@ export default function PostCard({ post, onUpdate }: PostCardProps) {
   };
 
   return (
-    <div className="border-b border-border bg-card">
+    <div className="border-b border-border bg-card card-enter transition-colors duration-300">
       {/* Header */}
       <div className="flex items-center gap-3 px-4 py-3">
         <Link to={`/profile/${post.user_id}`}>
