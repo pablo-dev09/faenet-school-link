@@ -15,6 +15,7 @@ import Explore from "./pages/Explore";
 import Notifications from "./pages/Notifications";
 import PostDetail from "./pages/PostDetail";
 import CourseArea from "./pages/CourseArea";
+import InstallApp from "./pages/InstallApp";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -38,6 +39,7 @@ const App = () => (
             <Route path="/post/:id" element={<ProtectedRoute><PostDetail /></ProtectedRoute>} />
             <Route path="/course/:slug" element={<ProtectedRoute><CourseArea /></ProtectedRoute>} />
             <Route path="/notifications" element={<ProtectedRoute><Notifications /></ProtectedRoute>} />
+            <Route path="/install" element={<InstallApp />} />
             <Route path="*" element={<NotFound />} />
           </Routes>
         </AuthProvider>
