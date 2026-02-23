@@ -5,6 +5,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Plus, X, ChevronLeft, ChevronRight } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { toast } from "sonner";
+import { convertImageToJpeg } from "@/lib/imageUtils";
 
 interface StoryGroup {
   user_id: string;
@@ -59,10 +60,10 @@ export default function StoriesBar() {
   const handleAddStory = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file || !user) return;
-    const ext = file.name.split(".").pop()?.toLowerCase();
-    const safeName = ext === "heic" || ext === "heif" ? "jpg" : ext;
-    const path = `${user.id}/${Date.now()}.${safeName}`;
-    const { error: uploadErr } = await supabase.storage.from("stories").upload(path, file);
+    const converted = await convertImageToJpeg(file);
+    const ext = converted.name.split(".").pop()?.toLowerCase() || "jpg";
+    const path = `${user.id}/${Date.now()}.${ext}`;
+    const { error: uploadErr } = await supabase.storage.from("stories").upload(path, converted);
     if (uploadErr) {
       toast.error("Erro ao enviar story");
       return;

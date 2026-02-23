@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { ImagePlus, X, ArrowLeft } from "lucide-react";
 import { toast } from "sonner";
+import { convertImageToJpeg } from "@/lib/imageUtils";
 
 export default function NewPost() {
   const { user } = useAuth();
@@ -36,10 +37,10 @@ export default function NewPost() {
 
     let image_url = "";
     if (imageFile) {
-      const ext = imageFile.name.split(".").pop()?.toLowerCase();
-      const safeName = ext === "heic" || ext === "heif" ? "jpg" : ext;
-      const path = `${user.id}/${Date.now()}.${safeName}`;
-      const { error: uploadError } = await supabase.storage.from("posts").upload(path, imageFile);
+      const converted = await convertImageToJpeg(imageFile);
+      const ext = converted.name.split(".").pop()?.toLowerCase() || "jpg";
+      const path = `${user.id}/${Date.now()}.${ext}`;
+      const { error: uploadError } = await supabase.storage.from("posts").upload(path, converted);
       if (uploadError) {
         toast.error("Erro ao enviar imagem");
         setLoading(false);
