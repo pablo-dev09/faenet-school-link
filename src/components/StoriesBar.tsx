@@ -59,8 +59,9 @@ export default function StoriesBar() {
   const handleAddStory = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file || !user) return;
-    const ext = file.name.split(".").pop();
-    const path = `${user.id}/${Date.now()}.${ext}`;
+    const ext = file.name.split(".").pop()?.toLowerCase();
+    const safeName = ext === "heic" || ext === "heif" ? "jpg" : ext;
+    const path = `${user.id}/${Date.now()}.${safeName}`;
     const { error: uploadErr } = await supabase.storage.from("stories").upload(path, file);
     if (uploadErr) {
       toast.error("Erro ao enviar story");
