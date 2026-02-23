@@ -36,8 +36,9 @@ export default function NewPost() {
 
     let image_url = "";
     if (imageFile) {
-      const ext = imageFile.name.split(".").pop();
-      const path = `${user.id}/${Date.now()}.${ext}`;
+      const ext = imageFile.name.split(".").pop()?.toLowerCase();
+      const safeName = ext === "heic" || ext === "heif" ? "jpg" : ext;
+      const path = `${user.id}/${Date.now()}.${safeName}`;
       const { error: uploadError } = await supabase.storage.from("posts").upload(path, imageFile);
       if (uploadError) {
         toast.error("Erro ao enviar imagem");

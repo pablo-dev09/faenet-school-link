@@ -8,6 +8,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Settings, Grid3X3, Bookmark, CheckCircle } from "lucide-react";
 import { cn } from "@/lib/utils";
+import ProfileHighlights from "@/components/ProfileHighlights";
 
 export default function Profile() {
   const { id } = useParams<{ id: string }>();
@@ -129,7 +130,7 @@ export default function Profile() {
           {profile.class_course && (
             <p className="text-sm text-muted-foreground">📚 {profile.class_course}</p>
           )}
-          {profile.bio && <p className="text-sm mt-1">{profile.bio}</p>}
+          {profile.bio && <p className="text-sm mt-1 whitespace-pre-line">{profile.bio}</p>}
         </div>
 
         {/* Action button */}
@@ -150,6 +151,9 @@ export default function Profile() {
           )}
         </div>
       </div>
+
+      {/* Highlights */}
+      <ProfileHighlights profileUserId={id!} isOwner={isOwner} />
 
       {/* Tabs */}
       <div className="flex border-t border-border">
@@ -183,7 +187,7 @@ export default function Profile() {
           ) : (
             posts.map((post) => (
               <Link key={post.id} to={`/post/${post.id}`} className="aspect-square bg-muted relative group">
-                {post.image_url ? (
+                {post.image_url && post.image_url.length > 0 ? (
                   <img src={post.image_url} alt="" className="w-full h-full object-cover" />
                 ) : (
                   <div className="w-full h-full flex items-center justify-center bg-muted p-2">

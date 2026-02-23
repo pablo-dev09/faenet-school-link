@@ -91,7 +91,7 @@ export default function PostCard({ post, onUpdate }: PostCardProps) {
       </div>
 
       {/* Image */}
-      {post.image_url && (
+      {post.image_url && post.image_url.length > 0 && (
         <div
           className="relative w-full aspect-square bg-muted cursor-pointer"
           onDoubleClick={handleDoubleTap}
